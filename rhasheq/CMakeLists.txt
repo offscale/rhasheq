@@ -16,13 +16,20 @@ if (CMAKE_C_STANDARD GREATER 90)
     endif (HAS_STDBOOL)
 endif (CMAKE_C_STANDARD GREATER 90)
 
-# TODO: Move this to vcpkg… I guess?
-set(DOWNLOAD_DIR "${PROJECT_BINARY_DIR}/third_party")
-file(MAKE_DIRECTORY "${DOWNLOAD_DIR}")
-set(extra_headers "${DOWNLOAD_DIR}/c89stringutils_string_extras.h")
+set(dl_header "c89stringutils_string_extras.h")
+if (VCPKG_TOOLCHAIN)  # Overly specific, should be same for conan, Buckaroo, Hunter, &etc.
+    find_path(C89STRINGUTILS_INCLUDE_DIRS "${dl_header}")
+else ()
+    set(DOWNLOAD_DIR "${PROJECT_BINARY_DIR}/third_party")
+    file(MAKE_DIRECTORY "${DOWNLOAD_DIR}")
+    set(c89stringutils_string_extras "${DOWNLOAD_DIR}/${dl_header}")
 
-file(DOWNLOAD "https://raw.githubusercontent.com/offscale/c89stringutils/992cace/c89stringutils/c89stringutils_string_extras.h"
-        "${extra_headers}")
+    file(DOWNLOAD "https://raw.githubusercontent.com/offscale/c89stringutils/992cace/c89stringutils/${dl_header}"
+            "${c89stringutils_string_extras}")
+
+    list(APPEND Header_Files "${c89stringutils_string_extras}")
+    set(C89STRINGUTILS_INCLUDE_DIRS "$<BUILD_INTERFACE:${DOWNLOAD_DIR}>")
+endif (NOT VCPKG_TOOLCHAIN)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules;${CMAKE_MODULE_PATH}")
 find_package(LibRHash)
@@ -49,7 +56,7 @@ target_include_directories(
         "${LIBRARY_NAME}"
         INTERFACE
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>"
-        "$<BUILD_INTERFACE:${DOWNLOAD_DIR}>"
+        "${C89STRINGUTILS_INCLUDE_DIRS}"
         "$<INSTALL_INTERFACE:include>"
 )
 
