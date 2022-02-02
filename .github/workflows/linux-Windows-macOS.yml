@@ -25,10 +25,10 @@ jobs:
       - name: mkdir
         run: mkdir build
 
-      - name: configure
+      - name: configure on macOS
         working-directory: ./build
         run: cmake -DCMAKE_BUILD_TYPE="Debug" ..
-        if: matrix.os != 'windows-latest'
+        if: matrix.os == 'macos-latest'
 
       - name: checkout vcpkg
         uses: actions/checkout@v2
