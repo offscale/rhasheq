@@ -53,8 +53,6 @@ target_include_directories(
         "$<INSTALL_INTERFACE:include>"
 )
 
-
-
 set_target_properties(
         "${LIBRARY_NAME}"
         PROPERTIES

@@ -19,6 +19,48 @@
 
 #include <c89stringutils_string_extras.h>
 
+#define comma ,
+#define blank /* nothing */
+
+int hash_file(const char*, enum rhash_ids,
+			  enum rhash_print_sum_flags,
+			  char *, char *);
+
+#define HASHES_ \
+	X(crc32, comma) \
+	X(md4, comma) \
+	X(md5, comma) \
+	X(tiger, comma) \
+	X(tth, comma) \
+	X(btih, comma) \
+	X(ed2k, comma) \
+	X(aich, comma) \
+	X(whirlpool, comma) \
+	X(ripemd160, comma) \
+	X(gost94, comma) \
+	X(gost94_cryptopro, comma) \
+	X(has160, comma) \
+	X(gost12_256, comma) \
+	X(gost12_512, comma) \
+	X(sha224, comma)  \
+	X(sha256, comma) \
+    X(sha384, comma) \
+    X(sha512, comma) \
+	X(edonr256, comma) \
+	X(edonr512, comma) \
+	X(sha3_224, comma) \
+	X(sha3_256, comma) \
+	X(sha3_384, comma) \
+	X(sha3_512, comma) \
+	X(crc32c, comma) \
+	X(snefru128, comma) \
+	X(snefru256, blank)
+
+#define X(name, unused) \
+  bool name(const char *, const char *);
+HASHES_
+#undef X
+
 #ifdef RHASHEQ_IMPLEMENTATION
 
 int hash_file(const char* filepath,
@@ -47,8 +89,6 @@ int hash_file(const char* filepath,
     }
 }
 
-#define comma ,
-#define blank /* nothing */
 #define HASHES \
 	X(crc32, RHASH_CRC32, comma) \
 	X(md4, RHASH_MD4, comma) \
@@ -87,6 +127,10 @@ int hash_file(const char* filepath,
 HASHES
 #undef X
 
+
 #endif /* RHASHEQ_IMPLEMENTATION */
+
+#undef comma
+#undef blank
 
 #endif /* !RHASH_EQ_H */
