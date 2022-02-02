@@ -1,6 +1,6 @@
 FROM alpine
 
-RUN apk add --no-cache gcc cmake make musl-dev linux-headers
+RUN apk add --no-cache gcc cmake make musl-dev linux-headers rhash
 
 COPY . /rhasheq
 

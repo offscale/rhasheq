@@ -4,7 +4,7 @@ ADD 'https://github.com/Kitware/CMake/releases/download/v3.22.2/cmake-3.22.2-lin
 
 RUN sh /tmp/cmake.sh --prefix='/usr/local' --skip-license && \
     apt-get update -qq && \
-    apt-get install -y gcc make pkg-config libc-dev librhash
+    apt-get install -y gcc make pkg-config libc-dev rhash
 
 COPY . /rhasheq
 

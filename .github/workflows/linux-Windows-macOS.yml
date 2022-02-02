@@ -18,11 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Install dependencies for ${{ matrix.os }}
-        run: sudo apt-get install -y rhash
-        if: matrix.os == 'ubuntu-latest'
-
-      - name: Install dependencies for ${{ matrix.os }}
+      - name: Install dependencies for macOS
         run: brew install rhash
         if: matrix.os == 'macos-latest'
 
@@ -40,18 +36,28 @@ jobs:
           repository: "microsoft/vcpkg"
           ref: 6ba505cf2c1752d8ea5abb21427e23ff89dc486f
           path: vcpkg
-        if: matrix.os == 'windows-latest'
+        if: matrix.os == 'windows-latest' || matrix.os == 'ubuntu-latest'
 
-      - name: "Setup vcpkg"
+      - name: "Setup vcpkg (Windows)"
         run: ./vcpkg/bootstrap-vcpkg.bat
         if: matrix.os == 'windows-latest'
 
-      - name: configure (with vcpkg)
+      - name: "Setup vcpkg (Ubuntu)"
+        run: ./vcpkg/bootstrap-vcpkg.sh
+        if: matrix.os == 'ubuntu-latest'
+
+      - name: configure (with vcpkg on Windows)
         working-directory: ./build
         run: |
           cmake -DCMAKE_TOOLCHAIN_FILE="vcpkg\scripts\buildsystems\vcpkg.cmake" ..
         shell: cmd
         if: matrix.os == 'windows-latest'
+
+      - name: configure (with vcpkg on Linux)
+        working-directory: ./build
+        run: |
+          cmake -DCMAKE_TOOLCHAIN_FILE="vcpkg/scripts/buildsystems/vcpkg.cmake" ..
+        if: matrix.os == 'ubuntu-latest'
 
       - name: build
         working-directory: ./build
