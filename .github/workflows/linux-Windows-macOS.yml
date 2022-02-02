@@ -33,8 +33,8 @@ jobs:
       - name: checkout vcpkg
         uses: actions/checkout@v2
         with:
-          repository: "microsoft/vcpkg"
-          ref: 6ba505cf2c1752d8ea5abb21427e23ff89dc486f
+          repository: "offscale/vcpkg"
+          ref: 525983154f9c11294dbc2d28c0029e0b0502e8d4
           path: vcpkg
         if: matrix.os == 'windows-latest' || matrix.os == 'ubuntu-latest'
 
