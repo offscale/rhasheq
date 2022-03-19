@@ -17,6 +17,7 @@
 
 #include <rhash.h>
 
+#define C89STRINGUTILS_IMPLEMENTATION
 #include <c89stringutils_string_extras.h>
 
 #define comma ,

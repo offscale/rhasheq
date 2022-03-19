@@ -1,8 +1,7 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.3)
 project(rhasheq VERSION 0.0.1 LANGUAGES C)
 
 set(CMAKE_C_STANDARD 90)
-cmake_policy(SET CMP0063 NEW)
 set(CMAKE_C_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
 
@@ -39,7 +38,7 @@ add_subdirectory("${PROJECT_NAME}")
 
 include(CTest)
 enable_testing()
-add_subdirectory("rhasheq_tests")
+add_subdirectory("${PROJECT_NAME}_tests")
 
 install(
         FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.h"
