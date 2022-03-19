@@ -37,7 +37,6 @@ configure_file(
 add_subdirectory("${PROJECT_NAME}")
 
 include(CTest)
-enable_testing()
 add_subdirectory("${PROJECT_NAME}_tests")
 
 install(
