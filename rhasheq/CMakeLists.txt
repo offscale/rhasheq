@@ -1,20 +1,11 @@
 get_filename_component(LIBRARY_NAME "${CMAKE_CURRENT_SOURCE_DIR}" NAME)
-string(REPLACE " " "_" LIBRARY_NAME "${LIBRARY_NAME}")
 
 set(Header_Files "rhasheq.h" "rhasheq_stdbool.h")
-
 source_group("Header Files" FILES "${Header_Files}")
 
 add_library("${LIBRARY_NAME}" INTERFACE "${Header_Files}")
 
 include(CheckIncludeFile)
-
-if (CMAKE_C_STANDARD GREATER 90)
-    CHECK_INCLUDE_FILE("stdbool.h" HAS_STDBOOL)
-    if (HAS_STDBOOL)
-        add_compile_definitions(HAS_STDBOOL=1)
-    endif (HAS_STDBOOL)
-endif (CMAKE_C_STANDARD GREATER 90)
 
 set(dl_header "c89stringutils_string_extras.h")
 if (VCPKG_TOOLCHAIN)  # Overly specific, should be same for conan, Buckaroo, Hunter, &etc.
@@ -29,7 +20,7 @@ else ()
 
     list(APPEND Header_Files "${c89stringutils_string_extras}")
     set(C89STRINGUTILS_INCLUDE_DIRS "$<BUILD_INTERFACE:${DOWNLOAD_DIR}>")
-endif (NOT VCPKG_TOOLCHAIN)
+endif (VCPKG_TOOLCHAIN)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules;${CMAKE_MODULE_PATH}")
 find_package(LibRHash)
@@ -52,12 +43,13 @@ endif (NOT LibRHash_FOUND)
 
 target_link_libraries("${LIBRARY_NAME}" INTERFACE "LibRHash::LibRHash")
 
+include(GNUInstallDirs)
 target_include_directories(
         "${LIBRARY_NAME}"
         INTERFACE
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>"
-        "${C89STRINGUTILS_INCLUDE_DIRS}"
-        "$<INSTALL_INTERFACE:include>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
+        "$<BUILD_INTERFACE:${C89STRINGUTILS_INCLUDE_DIRS}>"
+        "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
 )
 
 set_target_properties(
@@ -73,6 +65,10 @@ if (TARGET "${DEPENDANT_LIBRARY}")
     list(APPEND installable_libs "${DEPENDANT_LIBRARY}")
 endif ()
 install(TARGETS ${installable_libs}
-        DESTINATION "${INSTALL_DEST}"
-        EXPORT "${LIBRARY_NAME}Targets")
-install(FILES ${Header_Files} ${extra_headers} DESTINATION "include")
+        EXPORT "${LIBRARY_NAME}Targets"
+        ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+        LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+        RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
+install(FILES ${Header_Files} ${extra_headers}
+        TYPE "INCLUDE")
+install(EXPORT "${LIBRARY_NAME}Targets" DESTINATION "${CMAKE_INSTALL_DATADIR}/${LIBRARY_NAME}")

@@ -39,9 +39,10 @@ add_subdirectory("${PROJECT_NAME}")
 include(CTest)
 add_subdirectory("${PROJECT_NAME}_tests")
 
+include(GNUInstallDirs)
 install(
         FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.h"
-        DESTINATION "include"
+        TYPE "INCLUDE"
 )
 
 include(InstallRequiredSystemLibraries)
@@ -68,7 +69,7 @@ include(CMakePackageConfigHelpers)
 configure_package_config_file(
         "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Config.cmake.in"
         "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-        INSTALL_DESTINATION "lib/cmake/example"
+        INSTALL_DESTINATION "share/${PROJECT_NAME}"
         NO_SET_AND_CHECK_MACRO
         NO_CHECK_REQUIRED_COMPONENTS_MACRO
 )
@@ -79,3 +80,5 @@ write_basic_package_version_file(
         VERSION "${${PROJECT_NAME}_VERSION_MAJOR}.${${PROJECT_NAME}_VERSION_MINOR}"
         COMPATIBILITY AnyNewerVersion
 )
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+        DESTINATION "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")

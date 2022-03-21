@@ -7,13 +7,20 @@
 #ifndef RHASH_EQ_H
 #define RHASH_EQ_H
 
-#include <errno.h>
-
-#if defined(HAS_STDBOOL) && !defined(bool)
+#ifdef __cplusplus
+#include <cstdbool>
+extern "C" {
+#else
+#undef bool
+#if __STDC_VERSION__ >= 199901L
 #include <stdbool.h>
 #else
-#include "rhasheq_stdbool.h"
-#endif
+#include <rhasheq_stdbool.h>
+#endif /* __STDC_VERSION__ >= 199901L */
+#endif /* __cplusplus */
+
+
+#include <errno.h>
 
 #include <rhash.h>
 
@@ -132,5 +139,9 @@ HASHES
 
 #undef comma
 #undef blank
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
 
 #endif /* !RHASH_EQ_H */
