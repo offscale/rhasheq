@@ -37,7 +37,9 @@ configure_file(
 add_subdirectory("${PROJECT_NAME}")
 
 include(CTest)
-add_subdirectory("${PROJECT_NAME}_tests")
+if (BUILD_TESTING)
+    add_subdirectory("${PROJECT_NAME}_tests")
+endif (BUILD_TESTING)
 
 include(GNUInstallDirs)
 install(
