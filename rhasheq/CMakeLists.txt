@@ -7,20 +7,11 @@ add_library("${LIBRARY_NAME}" INTERFACE "${Header_Files}")
 
 include(CheckIncludeFile)
 
-set(dl_header "c89stringutils_string_extras.h")
-if (VCPKG_TOOLCHAIN)  # Overly specific, should be same for conan, Buckaroo, Hunter, &etc.
-    find_path(C89STRINGUTILS_INCLUDE_DIRS "${dl_header}")
-else ()
-    set(DOWNLOAD_DIR "${PROJECT_BINARY_DIR}/third_party")
-    file(MAKE_DIRECTORY "${DOWNLOAD_DIR}")
-    set(c89stringutils_string_extras "${DOWNLOAD_DIR}/${dl_header}")
+find_package(c89stringutils CONFIG REQUIRED)
 
-    file(DOWNLOAD "https://raw.githubusercontent.com/offscale/c89stringutils/992cace/c89stringutils/${dl_header}"
-            "${c89stringutils_string_extras}")
+target_link_libraries("${LIBRARY_NAME}" INTERFACE c89stringutils c89stringutils_compiler_flags)
 
-    list(APPEND Header_Files "${c89stringutils_string_extras}")
-    set(C89STRINGUTILS_INCLUDE_DIRS "$<BUILD_INTERFACE:${DOWNLOAD_DIR}>")
-endif (VCPKG_TOOLCHAIN)
+find_package(unofficial-rhash CONFIG REQUIRED)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules;${CMAKE_MODULE_PATH}")
 find_package(LibRHash)
@@ -38,7 +29,8 @@ if (NOT TARGET LibRHash)
     find_package(LibRHash REQUIRED)
 endif (NOT TARGET LibRHash)
 if (NOT LibRHash_FOUND)
-    message(FATAL_ERROR "LibRHash not found")
+    find_package(unofficial-rhash CONFIG REQUIRED)
+    target_link_libraries("${LIBRARY_NAME}" PRIVATE unofficial::rhash::rhash)
 endif (NOT LibRHash_FOUND)
 
 target_link_libraries("${LIBRARY_NAME}" INTERFACE "LibRHash::LibRHash")
