@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    uses: SamuelMarks/c-ci/.github/workflows/c-cmake-ci.yml@master
+    with:
+      cmake_configure_flags: '-DRHASHEQ_BUILD_AMALGAMATION=ON'
+      project_name: 'rhasheq'
+      extra_apt_packages: 'librhash-dev'
+      extra_brew_packages: 'rhash'
+
+  test-amalg:
+    name: Test Amalgamation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install rhash
+        run: sudo apt-get update && sudo apt-get install -y librhash-dev
+
+      - name: Generate and test amalgamation
+        run: |
+          cmake -B build -DRHASHEQ_BUILD_AMALGAMATION=ON -DBUILD_TESTING=ON
+          cmake --build build
+          ctest --test-dir build -C Debug --output-on-failure

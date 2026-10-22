@@ -1,12 +1,29 @@
+/**
+ * @file config_for_tests.h.in
+ * @brief Configured test constants for rhasheq test suite.
+ */
+
 #ifndef LIBACQUIRE_CONFIG_FOR_TESTS_H
 #define LIBACQUIRE_CONFIG_FOR_TESTS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
+/** @brief Expected CRC32C hex digest of greatest.h. */
 #define GREATEST_CRC32C "@GREATEST_CRC32C@"
 
+/** @brief Directory where test files are downloaded. */
 #define DOWNLOAD_DIR "@DOWNLOAD_DIR@"
 
+/** @brief Base filename of greatest.h. */
 #define GREATEST_BASEFILENAME "@GREATEST_BASEFILENAME@"
 
+/** @brief Full path to greatest.h test input file. */
 #define GREATEST_FILE "@GREATEST_FILE@"
 
-#endif /* ! LIBACQUIRE_CONFIG_FOR_TESTS_H */
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
+#endif /* !LIBACQUIRE_CONFIG_FOR_TESTS_H */

@@ -66,7 +66,7 @@ if(LibRHash_FOUND)
     set(LibRHash_INCLUDE_DIRS ${LibRHash_INCLUDE_DIR})
     set(LibRHash_LIBRARIES ${LibRHash_LIBRARY})
     if(NOT TARGET LibRHash::LibRHash)
-        add_library(LibRHash::LibRHash UNKNOWN IMPORTED)
+        add_library(LibRHash::LibRHash UNKNOWN IMPORTED GLOBAL)
         set_target_properties(LibRHash::LibRHash PROPERTIES
                 IMPORTED_LOCATION "${LibRHash_LIBRARY}"
                 INTERFACE_INCLUDE_DIRECTORIES "${LibRHash_INCLUDE_DIRS}"

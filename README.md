@@ -1,6 +1,8 @@
 rhasheq
 =======
 [![License](https://img.shields.io/badge/license-0BSD-blue.svg)](https://opensource.org/licenses/0BSD)
+![Doc Coverage](https://img.shields.io/badge/doc__coverage-100.00%25-brightgreen)
+![Test Coverage](https://img.shields.io/badge/test__coverage-100.00%25-brightgreen)
 [![CI for Linux, Windows, macOS, sunOS](https://github.com/offscale/rhasheq/actions/workflows/linux-Windows-macOS.yml/badge.svg)](https://github.com/offscale/rhasheq/actions/workflows/github-actions.yml)
 [![C89](https://img.shields.io/badge/C-89-blue)](https://en.wikipedia.org/wiki/C89_(C_version))
 

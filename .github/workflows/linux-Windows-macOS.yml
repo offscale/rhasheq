@@ -2,67 +2,30 @@ name: Linux, Windows, macOS
 
 on:
   push:
-    branches:
-      - master
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+    uses: SamuelMarks/c-ci/.github/workflows/c-cmake-ci.yml@master
+    with:
+      cmake_configure_flags: '-DRHASHEQ_BUILD_AMALGAMATION=ON'
+      project_name: 'rhasheq'
+      extra_apt_packages: 'librhash-dev'
+      extra_brew_packages: 'rhash'
 
-    name: ${{ matrix.os }}
-
+  test-amalg:
+    name: Test Amalgamation
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - name: Install dependencies for macOS
-        run: brew install rhash
-        if: matrix.os == 'macos-latest'
+      - name: Install rhash
+        run: sudo apt-get update && sudo apt-get install -y librhash-dev
 
-      - name: mkdir
-        run: mkdir build
-
-      - name: configure on macOS
-        working-directory: ./build
-        run: cmake -DCMAKE_BUILD_TYPE="Debug" ..
-        if: matrix.os == 'macos-latest'
-
-      - name: checkout vcpkg
-        uses: actions/checkout@v2
-        with:
-          repository: "offscale/vcpkg"
-          ref: 525983154f9c11294dbc2d28c0029e0b0502e8d4
-          path: vcpkg
-        if: matrix.os == 'windows-latest' || matrix.os == 'ubuntu-latest'
-
-      - name: "Setup vcpkg (Windows)"
-        run: ./vcpkg/bootstrap-vcpkg.bat
-        if: matrix.os == 'windows-latest'
-
-      - name: "Setup vcpkg (Ubuntu)"
-        run: ./vcpkg/bootstrap-vcpkg.sh
-        if: matrix.os == 'ubuntu-latest'
-
-      - name: configure (with vcpkg on Windows)
-        working-directory: ./build
+      - name: Generate and test amalgamation
         run: |
-          cmake -DCMAKE_TOOLCHAIN_FILE="vcpkg\scripts\buildsystems\vcpkg.cmake" ..
-        shell: cmd
-        if: matrix.os == 'windows-latest'
-
-      - name: configure (with vcpkg on Linux)
-        working-directory: ./build
-        run: |
-          cmake -DCMAKE_TOOLCHAIN_FILE="vcpkg/scripts/buildsystems/vcpkg.cmake" ..
-        if: matrix.os == 'ubuntu-latest'
-
-      - name: build
-        working-directory: ./build
-        run: cmake --build .
-
-      - name: test
-        working-directory: ./build
-        run: ctest -C Debug .
+          cmake -B build -DRHASHEQ_BUILD_AMALGAMATION=ON -DBUILD_TESTING=ON
+          cmake --build build
+          ctest --test-dir build -C Debug --output-on-failure

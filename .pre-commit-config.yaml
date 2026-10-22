@@ -1,0 +1,101 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: v18.1.8
+    hooks:
+      - id: clang-format
+        args: ['-style=LLVM']
+        types_or: [c, c++]
+  - repo: local
+    hooks:
+      - id: cppcheck
+        name: Cppcheck
+        entry: python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/SamuelMarks/c-ci/master/precommit_matrix.py').read())" cppcheck
+        language: python
+        pass_filenames: false
+        types_or: [c, c++]
+      - id: build-gcc
+        name: Build (GCC)
+        entry: python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/SamuelMarks/c-ci/master/precommit_matrix.py').read())" build gcc
+        language: python
+        pass_filenames: false
+      - id: test-gcc
+        name: Test (GCC)
+        entry: python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/SamuelMarks/c-ci/master/precommit_matrix.py').read())" test gcc
+        language: python
+        pass_filenames: false
+      - id: build-clang
+        name: Build (Clang)
+        entry: python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/SamuelMarks/c-ci/master/precommit_matrix.py').read())" build clang
+        language: python
+        pass_filenames: false
+      - id: test-clang
+        name: Test (Clang)
+        entry: python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/SamuelMarks/c-ci/master/precommit_matrix.py').read())" test clang
+        language: python
+        pass_filenames: false
+      - id: build-msvc-2026-wine
+        name: Build and Test (MSVC 2026 Wine)
+        entry: python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/SamuelMarks/c-ci/master/precommit_matrix.py').read())" build msvc_2026_wine
+        language: python
+        pass_filenames: false
+      - id: build-msvc
+        name: Build (MSVC)
+        entry: python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/SamuelMarks/c-ci/master/precommit_matrix.py').read())" build msvc
+        language: python
+        pass_filenames: false
+      - id: test-msvc
+        name: Test (MSVC)
+        entry: python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/SamuelMarks/c-ci/master/precommit_matrix.py').read())" test msvc
+        language: python
+        pass_filenames: false
+      - id: build-mingw
+        name: Build (MinGW)
+        entry: python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/SamuelMarks/c-ci/master/precommit_matrix.py').read())" build mingw
+        language: python
+        pass_filenames: false
+      - id: test-mingw
+        name: Test (MinGW)
+        entry: python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/SamuelMarks/c-ci/master/precommit_matrix.py').read())" test mingw
+        language: python
+        pass_filenames: false
+      - id: valgrind
+        name: Valgrind (GCC)
+        entry: python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/SamuelMarks/c-ci/master/precommit_matrix.py').read())" valgrind gcc
+        language: python
+        pass_filenames: false
+      - id: valgrind-clang
+        name: Valgrind (Clang)
+        entry: python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/SamuelMarks/c-ci/master/precommit_matrix.py').read())" valgrind clang
+        language: python
+        pass_filenames: false
+      - id: check-enum-returns-clang
+        name: Check Enum Returns (libclang)
+        entry: python -c "import glob, os, sys, urllib.request; p = next((x for x in ['/opt/homebrew/opt/llvm/lib/libclang.dylib', '/opt/homebrew/lib/libclang.dylib', '/usr/local/lib/libclang.dylib', '/Library/Developer/CommandLineTools/usr/lib/libclang.dylib'] + sorted(glob.glob('/opt/homebrew/Cellar/llvm*/*/lib/libclang.dylib'), reverse=True) if os.path.exists(x)), None); bdir = next((d for d in ('build', 'cmake-build-debug', 'build_gcc', 'build_clang') if os.path.exists(d + '/compile_commands.json')), None); args = [sys.argv[0], '--exclude-files', '*test*']; (args.extend(['--libclang-path', p]) if p and '--libclang-path' not in sys.argv else None); (args.extend(['--build-dir', bdir]) if bdir and '--build-dir' not in sys.argv else None); args.extend([a for a in sys.argv[1:] if a.endswith('.c')] if len(sys.argv) > 1 else ['rhasheq']); sys.argv = args; exec(urllib.request.urlopen('https://raw.githubusercontent.com/SamuelMarks/c-ci/refs/heads/master/precommit_hooks/check_enum_returns_clang.py').read().decode('utf-8'))"
+        language: python
+        types_or: [c]
+        additional_dependencies: [libclang]
+      - id: check-error-percolation-clang
+        name: Check Error Percolation (libclang)
+        entry: >-
+          python -c "import clang.cindex, glob, os, sys, urllib.request; setattr(clang.cindex.Cursor, '__hash__', getattr(clang.cindex.Cursor, 'hash').fget); p = next((x for x in ['/opt/homebrew/opt/llvm/lib/libclang.dylib', '/opt/homebrew/lib/libclang.dylib', '/usr/local/lib/libclang.dylib', '/Library/Developer/CommandLineTools/usr/lib/libclang.dylib'] + sorted(glob.glob('/opt/homebrew/Cellar/llvm*/*/lib/libclang.dylib'), reverse=True) if os.path.exists(x)), None); args = [sys.argv[0]]; (args.extend(['--libclang-path', p]) if p and '--libclang-path' not in sys.argv else None); args.extend([a for a in sys.argv[1:] if a.endswith('.c')] if len(sys.argv) > 1 else ['rhasheq']); args.extend(['--compile-args', '-Irhasheq', '-Ibuild_gcc', '-Ibuild_gcc/rhash_include', '-Ibuild_clang', '-Ibuild_clang/rhash_include', '-I/opt/homebrew/include']); sys.argv = args; exec(urllib.request.urlopen('https://raw.githubusercontent.com/SamuelMarks/c-ci/refs/heads/master/precommit_hooks/check_error_percolation_clang.py').read().decode('utf-8'))"
+        language: python
+        types_or: [c]
+        additional_dependencies: [libclang]
+      - id: check-no-discard-void-clang
+        name: Check No-Discard Void Casts (libclang)
+        entry: python -c "import glob, os, sys, urllib.request; p = next((x for x in ['/opt/homebrew/opt/llvm/lib/libclang.dylib', '/opt/homebrew/lib/libclang.dylib', '/usr/local/lib/libclang.dylib', '/Library/Developer/CommandLineTools/usr/lib/libclang.dylib'] + sorted(glob.glob('/opt/homebrew/Cellar/llvm*/*/lib/libclang.dylib'), reverse=True) if os.path.exists(x)), None); bdir = next((d for d in ('build', 'cmake-build-debug', 'build_gcc', 'build_clang') if os.path.exists(d + '/compile_commands.json')), None); args = [sys.argv[0]]; (args.extend(['--libclang-path', p]) if p and '--libclang-path' not in sys.argv else None); (args.extend(['--build-dir', bdir]) if bdir and '--build-dir' not in sys.argv else None); args.extend([a for a in sys.argv[1:] if a.endswith('.c')] if len(sys.argv) > 1 else ['.']); sys.argv = args; exec(urllib.request.urlopen('https://raw.githubusercontent.com/SamuelMarks/c-ci/refs/heads/master/precommit_hooks/check_no_discard_void_clang.py').read().decode('utf-8'))"
+        language: python
+        types_or: [c]
+        additional_dependencies: [libclang]
+      - id: update-shields
+        name: Update README Shields
+        entry: python -c "import urllib.request; exec(urllib.request.urlopen('https://raw.githubusercontent.com/SamuelMarks/c-ci/master/precommit_matrix.py').read())" shields
+        language: python
+        additional_dependencies: [gcovr]
+        pass_filenames: false
