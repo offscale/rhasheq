@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.14...3.28)
+cmake_minimum_required(VERSION 3.14...4.4)
 project(rhasheq_tests
-        VERSION "0.0.2"
+        VERSION "0.0.3"
         LANGUAGES C)
 
 set(HOMEPAGE_URL "https://github.com/offscale/rhasheq")

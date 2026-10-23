@@ -71,9 +71,6 @@ source_group("Header Files" FILES "${Header_Files}")
 set(Source_Files
     "test.c"
 )
-if(RHASHEQ_HEADER_ONLY)
-    list(APPEND Source_Files "${CMAKE_SOURCE_DIR}/rhasheq/rhasheq.c")
-endif()
 source_group("Source Files" FILES "${Source_Files}")
 
 add_executable("${EXEC_NAME}" "${Header_Files}" "${Source_Files}")
