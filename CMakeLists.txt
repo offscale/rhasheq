@@ -167,6 +167,7 @@ configure_file(
 add_subdirectory("${PROJECT_NAME}")
 
 if((BUILD_TESTING OR ${PROJECT_PREFIX}_BUILD_TESTING) AND (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR))
+    set(DART_TESTING_TIMEOUT 60 CACHE STRING "Default CTest timeout" FORCE)
     set(MEMORYCHECK_COMMAND_OPTIONS "-q --tool=memcheck --leak-check=yes --show-reachable=no --num-callers=50" CACHE STRING "Valgrind options" FORCE)
     enable_testing()
     include(CTest)

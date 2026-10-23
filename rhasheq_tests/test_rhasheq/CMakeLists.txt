@@ -103,7 +103,7 @@ if(EMSCRIPTEN)
     target_link_options("${EXEC_NAME}" PRIVATE "-sNODERAWFS=1")
     add_test(NAME "${EXEC_NAME}" COMMAND node "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${EXEC_NAME}.js")
 else()
-    if((WIN32 OR CYGWIN OR MINGW) AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.21")
+    if((WIN32 OR MINGW) AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.21")
         add_custom_command(
             TARGET "${EXEC_NAME}" POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E
@@ -116,6 +116,7 @@ else()
     endif()
     add_test(NAME "${EXEC_NAME}" COMMAND "${EXEC_NAME}")
 endif()
+set_tests_properties("${EXEC_NAME}" PROPERTIES TIMEOUT 60)
 
 if(RHASHEQ_BUILD_AMALGAMATION)
     add_executable("test_amalg" "${CMAKE_CURRENT_SOURCE_DIR}/test_amalg.c")
@@ -152,7 +153,7 @@ if(RHASHEQ_BUILD_AMALGAMATION)
         target_link_options("test_amalg" PRIVATE "-sNODERAWFS=1")
         add_test(NAME "test_amalg" COMMAND node "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/test_amalg.js")
     else()
-        if((WIN32 OR CYGWIN OR MINGW) AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.21")
+        if((WIN32 OR MINGW) AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.21")
             add_custom_command(
                 TARGET "test_amalg" POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E
@@ -165,4 +166,5 @@ if(RHASHEQ_BUILD_AMALGAMATION)
         endif()
         add_test(NAME "test_amalg" COMMAND "test_amalg")
     endif()
+    set_tests_properties("test_amalg" PROPERTIES TIMEOUT 60)
 endif()
