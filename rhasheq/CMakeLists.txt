@@ -24,8 +24,8 @@ include(FetchContent)
 # 1. Resolve c89stringutils
 set(_RHASHEQ_FOUND_C89STRINGUTILS OFF)
 if(NOT CDD_DEPS STREQUAL "FETCHCONTENT")
-    find_package(c89stringutils CONFIG QUIET)
-    if(c89stringutils_FOUND)
+    find_package(c89stringutils CONFIG QUIET GLOBAL)
+    if(c89stringutils_FOUND AND TARGET c89stringutils)
         set(_RHASHEQ_FOUND_C89STRINGUTILS ON)
     endif()
 endif()
@@ -52,11 +52,13 @@ if(NOT _RHASHEQ_FOUND_C89STRINGUTILS)
     FetchContent_MakeAvailable(c89stringutils)
     set(BUILD_TESTING "${_SAVED_BUILD_TESTING}" CACHE BOOL "" FORCE)
     if(TARGET c89stringutils)
-        if(MSVC)
-            target_compile_options(c89stringutils PRIVATE "/W0")
-        elseif(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
-            target_compile_options(c89stringutils PRIVATE "-w")
-        endif()
+        set_target_properties(
+            c89stringutils
+            PROPERTIES
+            ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}"
+            LIBRARY_OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}"
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+        )
     endif()
     set(_RHASHEQ_FOUND_C89STRINGUTILS ON)
 endif()
@@ -125,6 +127,12 @@ if(_RHASHEQ_RHASH_TARGET STREQUAL "")
             rhash_bundled
             PRIVATE
             "${_RHASH_SRC_DIR}/librhash"
+        )
+        set_target_properties(
+            rhash_bundled
+            PROPERTIES
+            C_STANDARD 99
+            C_EXTENSIONS ON
         )
         target_compile_definitions(rhash_bundled PRIVATE "RHASH_XVERSION=0x01040600" "NO_IMPORT_EXPORT")
         if(MSVC)

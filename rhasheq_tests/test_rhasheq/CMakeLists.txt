@@ -103,6 +103,17 @@ if(EMSCRIPTEN)
     target_link_options("${EXEC_NAME}" PRIVATE "-sNODERAWFS=1")
     add_test(NAME "${EXEC_NAME}" COMMAND node "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${EXEC_NAME}.js")
 else()
+    if((WIN32 OR CYGWIN OR MINGW) AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.21")
+        add_custom_command(
+            TARGET "${EXEC_NAME}" POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E
+            "$<$<BOOL:$<TARGET_RUNTIME_DLLS:${EXEC_NAME}>>:copy_if_different>"
+            "$<$<NOT:$<BOOL:$<TARGET_RUNTIME_DLLS:${EXEC_NAME}>>>:true>"
+            $<TARGET_RUNTIME_DLLS:${EXEC_NAME}>
+            "$<$<BOOL:$<TARGET_RUNTIME_DLLS:${EXEC_NAME}>>:$<TARGET_FILE_DIR:${EXEC_NAME}>>"
+            COMMAND_EXPAND_LISTS
+        )
+    endif()
     add_test(NAME "${EXEC_NAME}" COMMAND "${EXEC_NAME}")
 endif()
 
@@ -141,6 +152,17 @@ if(RHASHEQ_BUILD_AMALGAMATION)
         target_link_options("test_amalg" PRIVATE "-sNODERAWFS=1")
         add_test(NAME "test_amalg" COMMAND node "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/test_amalg.js")
     else()
+        if((WIN32 OR CYGWIN OR MINGW) AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.21")
+            add_custom_command(
+                TARGET "test_amalg" POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E
+                "$<$<BOOL:$<TARGET_RUNTIME_DLLS:test_amalg>>:copy_if_different>"
+                "$<$<NOT:$<BOOL:$<TARGET_RUNTIME_DLLS:test_amalg>>>:true>"
+                $<TARGET_RUNTIME_DLLS:test_amalg>
+                "$<$<BOOL:$<TARGET_RUNTIME_DLLS:test_amalg>>:$<TARGET_FILE_DIR:test_amalg>>"
+                COMMAND_EXPAND_LISTS
+            )
+        endif()
         add_test(NAME "test_amalg" COMMAND "test_amalg")
     endif()
 endif()

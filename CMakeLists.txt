@@ -16,9 +16,6 @@ project(rhasheq VERSION 0.0.2 LANGUAGES C)
 string(TOUPPER "${PROJECT_NAME}" PROJECT_PREFIX)
 string(REPLACE "-" "_" PROJECT_PREFIX "${PROJECT_PREFIX}")
 
-set(CMAKE_C_STANDARD 90)
-set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_C_EXTENSIONS OFF)
 set(CMAKE_C_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -134,6 +131,9 @@ elseif(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
         "-Wcast-qual"
         "-Wwrite-strings"
     )
+    if(CMAKE_C_COMPILER_ID STREQUAL "Clang" AND NOT APPLE)
+        string(APPEND CMAKE_C_FLAGS_DEBUG " -gdwarf-4")
+    endif()
 endif()
 
 if(${PROJECT_PREFIX}_CHARSET STREQUAL "UNICODE" OR ${PROJECT_PREFIX}_CHARSET STREQUAL "Unicode")
@@ -154,7 +154,7 @@ include(CMakePackageConfigHelpers)
 # Generate the version file for the config file
 write_basic_package_version_file(
     "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
-    VERSION "${version}"
+    VERSION "${PROJECT_VERSION}"
     COMPATIBILITY AnyNewerVersion
 )
 
@@ -167,6 +167,7 @@ configure_file(
 add_subdirectory("${PROJECT_NAME}")
 
 if((BUILD_TESTING OR ${PROJECT_PREFIX}_BUILD_TESTING) AND (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR))
+    set(MEMORYCHECK_COMMAND_OPTIONS "-q --tool=memcheck --leak-check=yes --show-reachable=no --num-callers=50" CACHE STRING "Valgrind options" FORCE)
     enable_testing()
     include(CTest)
     add_subdirectory("${PROJECT_NAME}_tests")
