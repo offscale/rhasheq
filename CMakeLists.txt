@@ -53,8 +53,8 @@ else()
     option(RHASHEQ_BUILD_STATIC "Build rhasheq as a static library" ON)
 endif()
 option(RHASHEQ_HEADER_ONLY "Use rhasheq as a header-only INTERFACE library" OFF)
-option(${PROJECT_PREFIX}_BUILD_TESTING "Build tests for rhasheq" ON)
 option(BUILD_TESTING "Build tests" ON)
+option(${PROJECT_PREFIX}_BUILD_TESTING "Build tests for rhasheq" ${BUILD_TESTING})
 
 set(${PROJECT_PREFIX}_CHARSET "Unicode" CACHE STRING "Charset to use: Unicode or ANSI")
 set(${PROJECT_PREFIX}_THREADING "Multi-threaded" CACHE STRING "Threading: Multi-threaded or Single-threaded")
@@ -170,7 +170,7 @@ configure_file(
 
 add_subdirectory("${PROJECT_NAME}")
 
-if((BUILD_TESTING OR ${PROJECT_PREFIX}_BUILD_TESTING) AND (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR))
+if((BUILD_TESTING AND ${PROJECT_PREFIX}_BUILD_TESTING) AND (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR))
     set(DART_TESTING_TIMEOUT 60 CACHE STRING "Default CTest timeout" FORCE)
     set(MEMORYCHECK_COMMAND_OPTIONS "-q --tool=memcheck --leak-check=yes --show-reachable=no --num-callers=50" CACHE STRING "Valgrind options" FORCE)
     enable_testing()
@@ -200,6 +200,13 @@ install(FILES
     "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
     DESTINATION "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}"
 )
+
+if(_RHASHEQ_RHASH_TARGET STREQUAL "LibRHash::LibRHash")
+    install(FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/FindLibRHash.cmake"
+        DESTINATION "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}"
+    )
+endif()
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.h"
     TYPE "INCLUDE"

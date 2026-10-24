@@ -1,4 +1,17 @@
 
 @PACKAGE_INIT@
 
+include(CMakeFindDependencyMacro)
+
+if("@_RHASHEQ_USE_SYSTEM_C89STRINGUTILS@" OR NOT TARGET c89stringutils)
+    find_dependency(c89stringutils)
+endif()
+
+if("@_RHASHEQ_RHASH_TARGET@" STREQUAL "unofficial::rhash::rhash")
+    find_dependency(unofficial-rhash CONFIG)
+elseif("@_RHASHEQ_RHASH_TARGET@" STREQUAL "LibRHash::LibRHash")
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
+    find_dependency(LibRHash)
+endif()
+
 include ( "${CMAKE_CURRENT_LIST_DIR}/rhasheqTargets.cmake" )

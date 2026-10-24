@@ -23,12 +23,15 @@ include(FetchContent)
 
 # 1. Resolve c89stringutils
 set(_RHASHEQ_FOUND_C89STRINGUTILS OFF)
+set(_RHASHEQ_USE_SYSTEM_C89STRINGUTILS OFF)
 if(NOT CDD_DEPS STREQUAL "FETCHCONTENT")
     find_package(c89stringutils CONFIG QUIET GLOBAL)
     if(c89stringutils_FOUND AND TARGET c89stringutils)
         set(_RHASHEQ_FOUND_C89STRINGUTILS ON)
+        set(_RHASHEQ_USE_SYSTEM_C89STRINGUTILS ON)
     endif()
 endif()
+set(_RHASHEQ_USE_SYSTEM_C89STRINGUTILS "${_RHASHEQ_USE_SYSTEM_C89STRINGUTILS}" CACHE INTERNAL "Whether external c89stringutils package is used")
 
 if(NOT _RHASHEQ_FOUND_C89STRINGUTILS)
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../../c89stringutils/CMakeLists.txt")
@@ -177,7 +180,7 @@ endif()
 
 target_link_libraries("${LIBRARY_NAME}" ${_LINK_SCOPE} "${_RHASHEQ_RHASH_TARGET}" c89stringutils)
 target_compile_definitions("${LIBRARY_NAME}" ${_LINK_SCOPE} "RHASHEQ_USE_C89STRINGUTILS")
-if(BUILD_TESTING OR ${PROJECT_PREFIX}_BUILD_TESTING)
+if(BUILD_TESTING AND ${PROJECT_PREFIX}_BUILD_TESTING)
     target_compile_definitions("${LIBRARY_NAME}" ${_LINK_SCOPE} "RHASHEQ_TEST_MOCKS")
 endif()
 
